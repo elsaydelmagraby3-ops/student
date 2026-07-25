@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حجز مواعيد الحصص - المرحلة الإعدادية</title>
+ <link rel="icon" type="image/png" href="Capture.PNG">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --card-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+                0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .app-container {
+            background-image: url("Untitled design (10).png");
+            background-size: 100% auto;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-image: url("Untitled design (9).png");
+            background-size: 100% auto;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color);
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+
+        .page {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            padding: 24px 20px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn:disabled {
+            background-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .welcome-page {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 30px;
+            padding-bottom: 60px;
+        }
+        .teacher-logo {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            box-shadow: var(--shadow);
+            animation: floatLogo 3s ease-in-out infinite;
+        }
+        @keyframes floatLogo {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+        .teacher-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .teacher-info p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .rules-page h2 {
+            margin-bottom: 6px;
+            font-size: 1.5rem;
+        }
+        .rules-page>p {
+            margin-bottom: 20px;
+        }
+        .rules-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-y: auto;
+            flex: 1;
+            padding-bottom: 10px;
+        }
+        .rule-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .rule-card i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+        .rule-card span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+            line-height: 1.4;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .checkbox-container input {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        .checkbox-container label {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .form-page h2 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+        .form-page>p {
+            margin-bottom: 24px;
+        }
+        .step-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 0.4;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+        .input-group.active-step {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .input-group label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .input-field {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .options-grid.cols-3 {
+            grid-template-columns: 1fr;
+        }
+        .option-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-color);
+        }
+        .option-card:hover {
+            border-color: var(--primary-color);
+        }
+        .option-card.selected {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .appointments-page h2 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+        .appointments-page>p {
+            margin-bottom: 20px;
+        }
+        .slots-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .slot-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .slot-card:hover:not(.disabled) {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        .slot-card.selected {
+            border: 2px solid var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.04);
+        }
+        .slot-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: var(--border-color);
+        }
+        .slot-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+        .slot-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .slot-status {
+            text-align: left;
+        }
+        .slot-status .count {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+        }
+        .slot-card.disabled .slot-status .count {
+            color: var(--danger-color);
+        }
+        .slot-status .remaining {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .confirmation-page h2 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .confirmation-page>p {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .summary-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .summary-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .summary-value {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        /* Success Card Styles */
+        .success-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1;
+            gap: 20px;
+            padding: 20px 15px;
+            width: 100%;
+        }
+        .success-view.active {
+            display: flex;
+        }
+
+        .success-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 24px 20px 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            direction: rtl;
+        }
+
+        .success-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color), var(--primary-color));
+            background-size: 200% 100%;
+            animation: shimmerBorder 3s ease-in-out infinite;
+        }
+        @keyframes shimmerBorder {
+            0%,
+            100% {
+                background-position: -200% 0;
+            }
+            50% {
+                background-position: 200% 0;
+            }
+        }
+
+        .success-card .teacher-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 4px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--border-color);
+            letter-spacing: 1px;
+        }
+        .success-card .teacher-name i {
+            margin-left: 8px;
+            color: var(--success-color);
+        }
+
+        .success-card .card-split {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: stretch;
+            margin: 4px 0 10px;
+        }
+
+        .success-card .info-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-left: 16px;
+            border-left: 2px solid var(--border-color);
+            text-align: right;
+        }
+        .success-card .info-side .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .success-card .info-side .info-row:last-child {
+            border-bottom: none;
+        }
+        .success-card .info-side .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .success-card .info-side .info-value {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .success-card .qr-side {
+            flex: 0 0 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+        }
+        .success-card .qr-side #qrcode-container {
+            background: #ffffff;
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 110px;
+            height: 110px;
+        }
+        .success-card .qr-side #qrcode-container img,
+        .success-card .qr-side #qrcode-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 8px;
+        }
+
+        .success-card .qr-side .booking-id-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .success-card .qr-side .booking-id-value {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            direction: ltr;
+            background: rgba(37, 99, 235, 0.06);
+            padding: 2px 10px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 18px 14px 16px;
+                border-radius: 20px;
+            }
+            .success-card .teacher-name {
+                font-size: 1.2rem;
+            }
+            .success-card .card-split {
+                flex-direction: row;
+                gap: 10px;
+            }
+            .success-card .info-side {
+                padding-left: 10px;
+                gap: 6px;
+            }
+            .success-card .info-side .info-row {
+                padding: 2px 0;
+            }
+            .success-card .info-side .info-label {
+                font-size: 0.7rem;
+            }
+            .success-card .info-side .info-value {
+                font-size: 0.8rem;
+            }
+            .success-card .qr-side {
+                flex: 0 0 100px;
+            }
+            .success-card .qr-side #qrcode-container {
+                width: 90px;
+                height: 90px;
+                padding: 4px;
+            }
+            .success-card .qr-side .booking-id-label {
+                font-size: 0.6rem;
+                margin-top: 4px;
+            }
+            .success-card .qr-side .booking-id-value {
+                font-size: 0.9rem;
+                padding: 2px 8px;
+            }
+        }
+
+        [data-theme="dark"] .success-card {
+            border-color: var(--border-color);
+            background: var(--card-bg);
+        }
+        [data-theme="dark"] .success-card .qr-side #qrcode-container {
+            background: #ffffff;
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            color: white;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            animation: bounceIn 0.6s ease;
+            margin-bottom: 4px;
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            60% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .success-view h2 {
+            font-size: 1.4rem;
+            margin: 0;
+        }
+        .success-view .sub-text {
+            font-size: 0.9rem;
+            max-width: 300px;
+            margin: -8px 0 4px;
+        }
+
+        /* Status Page Styles */
+        .status-page h2 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+        .status-page>p {
+            margin-bottom: 20px;
+        }
+
+        .status-search-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .status-result-card {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 16px;
+            flex-direction: column;
+            gap: 14px;
+            animation: fadeIn 0.4s ease;
+        }
+        .status-result-card.visible {
+            display: flex;
+        }
+
+        .status-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .status-result-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .status-result-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .status-result-value {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-badge.rejected {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .status-no-result {
+            display: none;
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+        }
+        .status-no-result.visible {
+            display: block;
+        }
+
+        .status-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .status-loading.active {
+            display: block;
+        }
+        .status-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--text-color);
+            color: var(--bg-color);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+            pointer-events: auto;
+        }
+        .toast.success {
+            background: var(--success-color);
+            color: white;
+        }
+        .toast.error {
+            background: var(--danger-color);
+            color: white;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .loading-overlay .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading-overlay p {
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .teacher-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .app-footer {
+            text-align: left;
+            padding: 10px 0 10px 10px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-color);
+            margin-top: auto;
+            direction: ltr;
+            width: 100%;
+        }
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .contact-links a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.3rem;
+            transition: 0.3s;
+        }
+
+        .contact-links a:hover {
+            transform: scale(1.1);
+        }
+
+        .whatsapp {
+            background: #25D366;
+        }
+        .facebook {
+            background: #1877F2;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* Acceptance Card */
+        .acceptance-card-wrapper {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            margin: 16px auto 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .acceptance-card-wrapper.visible {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .acceptance-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 24px 20px 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            direction: rtl;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        [data-theme="dark"] .acceptance-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .acceptance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(37, 99, 235, 0.03), transparent 70%);
+            pointer-events: none;
+        }
+
+        .acceptance-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #10b981, #2563eb);
+            background-size: 200% 100%;
+            animation: shimmerBorder 3s ease-in-out infinite;
+        }
+
+        .acceptance-card .teacher-name {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 4px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed var(--border-color);
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        .acceptance-card .teacher-name i {
+            margin-left: 8px;
+            color: var(--success-color);
+        }
+
+        .acceptance-card .card-split {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: stretch;
+            margin: 6px 0 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .acceptance-card .info-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-left: 16px;
+            border-left: 2px solid var(--border-color);
+            text-align: right;
+        }
+        .acceptance-card .info-side .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .acceptance-card .info-side .info-row:last-child {
+            border-bottom: none;
+        }
+        .acceptance-card .info-side .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .acceptance-card .info-side .info-value {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .acceptance-card .qr-side {
+            flex: 0 0 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+        }
+        .acceptance-card .qr-side #acceptance-qrcode-container {
+            background: #ffffff;
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 110px;
+            height: 110px;
+        }
+        .acceptance-card .qr-side #acceptance-qrcode-container img,
+        .acceptance-card .qr-side #acceptance-qrcode-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 8px;
+        }
+        .acceptance-card .qr-side .student-code-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .acceptance-card .qr-side .student-code-value {
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            direction: ltr;
+            background: rgba(37, 99, 235, 0.06);
+            padding: 2px 10px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .acceptance-card {
+                padding: 18px 14px 16px;
+                border-radius: 20px;
+            }
+            .acceptance-card .teacher-name {
+                font-size: 1.2rem;
+            }
+            .acceptance-card .card-split {
+                gap: 10px;
+            }
+            .acceptance-card .info-side {
+                padding-left: 10px;
+                gap: 6px;
+            }
+            .acceptance-card .info-side .info-row {
+                padding: 2px 0;
+            }
+            .acceptance-card .info-side .info-label {
+                font-size: 0.7rem;
+            }
+            .acceptance-card .info-side .info-value {
+                font-size: 0.8rem;
+            }
+            .acceptance-card .qr-side {
+                flex: 0 0 100px;
+            }
+            .acceptance-card .qr-side #acceptance-qrcode-container {
+                width: 90px;
+                height: 90px;
+                padding: 4px;
+            }
+            .acceptance-card .qr-side .student-code-label {
+                font-size: 0.6rem;
+                margin-top: 4px;
+            }
+            .acceptance-card .qr-side .student-code-value {
+                font-size: 0.85rem;
+                padding: 2px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <header class="top-bar">
+            <button class="theme-toggle" id="themeToggle" onclick="App.toggleTheme()" aria-label="تبديل الوضع الليلي">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+            </button>
+        </header>
+
+        <!-- PAGE 1: Welcome & Logo -->
+        <section id="page-welcome" class="page welcome-page active" data-page="welcome">
+            <div class="teacher-logo">
+                <img src="https://cdn.phototourl.com/free/2026-07-21-ff4dfc55-fb7f-4740-9e3e-f23bd471993e.png" alt="Teacher Logo">
+            </div>
+            <div class="teacher-info">
+                <h1>الأستاذ/ مبروك نور الدين</h1>
+                <p>كبير معلم مادة الدراسات الاجتماعية للمرحلة الإعدادية</p>
+                <div class="contact-links">
+                    <a class="whatsapp" href="https://wa.me/201008292669" target="_blank">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                    <a class="facebook" href="https://facebook.com/profile.php?id=61571314161543" target="_blank">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="App.navigateTo('rules')">
+                    احجز الآن <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button class="btn btn-secondary" onclick="App.navigateTo('status')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    استعلام عن حالة الحجز
+                </button>
+            </div>
+
+            <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+        </section>
+
+        <!-- PAGE 2: Rules & Regulations -->
+        <section id="page-rules" class="page rules-page" data-page="rules">
+            <h2>قواعد وتعليمات الحصة</h2>
+            <p>يرجى قراءة التعليمات التالية بعناية قبل البدء في الحجز</p>
+
+            <div class="rules-container">
+                <div class="rule-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>1- الالتزام بالمواعيد وعدم التأخير عن وقت الحصة المكتوب.</span>
+                </div>
+                <div class="rule-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>2- عدم الغياب والالتزام بالحضور المستمر للمتابعة.</span>
+                </div>
+                <div class="rule-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>3- يمنع تماماً استخدام الهاتف المحمول أثناء الشرح بالحصة.</span>
+                </div>
+                <div class="rule-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>4- يمنع التحدث الجانبي أو أثناء الشرح بدون إذن مسبق.</span>
+                </div>
+                <div class="rule-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>5- يمنع ارتداء الكاب أو غطاء الرأس داخل سنتر الدروس.</span>
+                </div>
+                <div class="rule-card">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>6- يمنع ارتداء البرمودا أو البنطلونات المقطعة حفاظاً على الآاب العام.</span>
+                </div>
+            </div>
+
+            <div class="checkbox-container" onclick="App.toggleAgreement()">
+                <input type="checkbox" id="agreeCheck" onchange="App.handleAgreementChange()">
+                <label for="agreeCheck">أوافق على الالتزام بالقواعد السابقة</label>
+            </div>
+
+            <button class="btn" id="rulesNextBtn" onclick="App.navigateTo('form')" disabled>
+                متابعة الحجز <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+        </section>
+
+        <!-- PAGE 3: Student Data Input Form -->
+        <section id="page-form" class="page form-page" data-page="form">
+            <h2>بيانات الطالب الشخصية</h2>
+            <p>يرجى إدخال البيانات بدقة بالترتيب المطلوب</p>
+
+            <div class="step-group">
+                <div class="input-group active-step" id="stepName">
+                    <label>اسم الطالب ثلاثي</label>
+                    <input type="text" id="inputName" class="input-field" placeholder="مثال: أحمد محمد علي" oninput="App.validateStep(1)">
+                </div>
+
+                <div class="input-group" id="stepPhone">
+                    <label>رقم هاتف الطالب</label>
+                    <input type="tel" id="inputPhone" class="input-field" placeholder="01xxxxxxxx" maxlength="11" oninput="App.validateStep(2)">
+                </div>
+
+                <div class="input-group" id="stepParentPhone">
+                    <label>رقم هاتف ولي الأمر</label>
+                    <input type="tel" id="inputParentPhone" class="input-field" placeholder="01xxxxxxxx" maxlength="11" oninput="App.validateStep(3)">
+                </div>
+
+                <div class="input-group" id="stepGender">
+                    <label>نوع الطالب</label>
+                    <div class="options-grid">
+                        <div class="option-card" onclick="App.selectGender('ولد', this)">
+                            <i class="fa-solid fa-mars"></i> ولد
+                        </div>
+                        <div class="option-card" onclick="App.selectGender('بنت', this)">
+                            <i class="fa-solid fa-venus"></i> بنت
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" id="stepGrade">
+                    <label>الصف الدراسي</label>
+                    <div class="options-grid cols-3">
+                        <div class="option-card" onclick="App.selectGrade('الصف الأول الإعدادي', this)">الصف الأول الإعدادي</div>
+                        <div class="option-card" onclick="App.selectGrade('الصف الثاني الإعدادي', this)">الصف الثاني الإعدادي</div>
+                        <div class="option-card" onclick="App.selectGrade('الصف الثالث الإعدادي', this)">الصف الثالث الإعدادي</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" id="formNextBtn" onclick="App.proceedToAppointments()" disabled style="margin-top: 10px;">
+                عرض المواعيد المتاحة <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+        </section>
+
+        <!-- PAGE 4: Appointments Selection -->
+        <section id="page-appointments" class="page appointments-page" data-page="appointments">
+            <h2>اختر موعد الحصة</h2>
+            <p id="gradeGenderSubtitle">المواعيد المتاحة حسب صفك الدراسي ونوعك</p>
+
+            <div class="rule-card" style="display:block; margin-bottom:20px;">
+                <h3 style="margin-bottom:10px;">
+                    <i class="fa-solid fa-location-dot"></i>
+                    مكان الحصة
+                </h3>
+                <p style="line-height:1.8;">
+                    كفر الشيخ<br>
+                    سيدي سالم<br>
+                    دمرو الحدادي<br>
+                    أمام الوحدة الصحية
+                </p>
+                <a href="https://maps.app.goo.gl/soLM25SrPXyCWwncA"
+                target="_blank"
+                class="btn"
+                style="margin-top:15px; text-decoration:none;">
+                <i class="fa-solid fa-map-location-dot"></i>
+                فتح الموقع على الخريطة
+            </a>
+        </div>
+
+        <div class="slots-container" id="slotsContainer">
+            <!-- Dynamic Slots injected via JS -->
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">موعد الساعة</span>
+            <span class="summary-value" id="selectedTime">-</span>
+        </div>
+        <div class="summary-item"></div>
+
+        <button class="btn" id="slotNextBtn" onclick="App.proceedToConfirmation()" disabled>
+            تأكيد اختيار الموعد <i class="fa-solid fa-arrow-left"></i>
+        </button>
+    </section>
+
+    <!-- PAGE 5: Confirmation Page & Success View -->
+    <section id="page-confirmation" class="page confirmation-page" data-page="confirmation">
+
+        <div id="confirmationContent">
+            <h2>مراجعة وتأكيد الحجز</h2>
+            <p>تأكد من صحة بياناتك وموعد الحصة المختار قبل التأكيد النهائي</p>
+
+            <div class="summary-card">
+                <div class="summary-item">
+                    <span class="summary-label">اسم الطالب</span>
+                    <span class="summary-value" id="sumName">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">رقم الهاتف</span>
+                    <span class="summary-value" id="sumPhone">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">رقم ولي الأمر</span>
+                    <span class="summary-value" id="sumParentPhone">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">النوع والصف</span>
+                    <span class="summary-value" id="sumGradeGender">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">سعر الشهر</span>
+                    <span class="summary-value" id="sumPrice">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">يوم الحصة</span>
+                    <span class="summary-value" id="sumDay">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">موعد الساعة</span>
+                    <span class="summary-value" id="sumTime">-</span>
+                </div>
+            </div>
+
+            <button class="btn" id="finalBookingBtn" onclick="App.submitBooking()">
+                تأكيد الحجز النهائي <i class="fa-solid fa-check"></i>
+            </button>
+        </div>
+
+        <!-- Success View with Professional Card -->
+        <div class="success-view" id="successView">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2>تم تسجيل طلبك بنجاح</h2>
+            <p class="sub-text">تم استلام طلبك بنجاح وهو الآن قيد المراجعة</p>
+
+            <!-- Success Card -->
+            <div class="success-card">
+                <div class="teacher-name">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    أ / مبروك نور الدين
+                </div>
+                <div class="card-split">
+                    <div class="info-side">
+                        <div class="info-row">
+                            <span class="info-label">اسم الطالب</span>
+                            <span class="info-value" id="successStudentName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">الصف</span>
+                            <span class="info-value" id="successGrade">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">يوم الحصة</span>
+                            <span class="info-value" id="successDay">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">موعد الساعة</span>
+                            <span class="info-value" id="successTime">-</span>
+                        </div>
+                    </div>
+                    <div class="qr-side">
+                        <div id="qrcode-container"></div>
+                        <div class="booking-id-label">رقم الطلب</div>
+                        <div class="booking-id-value" id="successBookingId">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:420px;margin-top:4px;">
+                <button class="btn btn-success" onclick="App.navigateTo('status')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    استعلام عن حالة الطلب
+                </button>
+                <button class="btn btn-secondary" onclick="location.reload()">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    حجز طالب آخر
+                </button>
+            </div>
+        </div>
+
+        <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+    </section>
+
+    <!-- PAGE 6: STATUS (Query Page) -->
+    <section id="page-status" class="page status-page" data-page="status">
+        <h2><i class="fa-solid fa-magnifying-glass" style="color:var(--primary-color);"></i> استعلام عن الحجز</h2>
+        <p>أدخل رقم الهاتف أو رقم الطلب للاستعلام عن حالة حجزك</p>
+
+        <div class="status-search-section">
+            <label for="statusSearchInput" style="font-weight:700;font-size:0.95rem;color:var(--text-color);">
+                رقم الهاتف أو رقم الطلب (Booking ID)
+            </label>
+            <input type="text" id="statusSearchInput" class="input-field"
+            placeholder="مثال: 01012345678 أو BK123456"
+            oninput="StatusApp.handleInputChange()">
+
+            <button class="btn" id="statusSearchBtn" onclick="StatusApp.searchBooking()" disabled>
+                <i class="fa-solid fa-search"></i> بحث
+            </button>
+
+            <button class="btn btn-secondary" onclick="App.navigateTo('welcome')">
+                <i class="fa-solid fa-arrow-right"></i> العودة للرئيسية
+            </button>
+        </div>
+
+        <div class="status-loading" id="statusLoading">
+            <div class="spinner"></div>
+            <p style="margin-top:10px;color:var(--text-muted);">جاري البحث...</p>
+        </div>
+
+        <div class="status-no-result" id="statusNoResult">
+            <i class="fa-solid fa-circle-exclamation" style="font-size:2rem;color:var(--text-muted);margin-bottom:10px;"></i>
+            <p>لا توجد حجوزات تطابق معايير البحث.</p>
+            <p style="font-size:0.85rem;margin-top:8px;">تأكد من صحة رقم الهاتف أو رقم الطلب المدخل.</p>
+        </div>
+
+        <div class="status-result-card" id="statusResultCard">
+            <div class="status-result-item">
+                <span class="status-result-label">رقم الطلب</span>
+                <span class="status-result-value" id="srBookingId">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">اسم الطالب</span>
+                <span class="status-result-value" id="srName">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">رقم الهاتف</span>
+                <span class="status-result-value" id="srPhone">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">الصف الدراسي</span>
+                <span class="status-result-value" id="srGrade">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">يوم الحصة</span>
+                <span class="status-result-value" id="srDay">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">موعد الساعة</span>
+                <span class="status-result-value" id="srTime">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">سعر الشهر</span>
+                <span class="status-result-value" id="srPrice">-</span>
+            </div>
+            <div class="status-result-item">
+                <span class="status-result-label">حالة الطلب</span>
+                <span class="status-result-value" id="srStatus">-</span>
+            </div>
+        </div>
+
+        <!-- Acceptance Card (بطاقة القبول) -->
+        <div class="acceptance-card-wrapper" id="acceptanceCardWrapper">
+            <div class="acceptance-card" id="acceptanceCard">
+                <div class="teacher-name">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    أ / مبروك نور الدين
+                </div>
+                <div class="card-split">
+                    <div class="info-side">
+                        <div class="info-row">
+                            <span class="info-label">اسم الطالب</span>
+                            <span class="info-value" id="acceptanceName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">الصف</span>
+                            <span class="info-value" id="acceptanceGrade">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">يوم الحصة</span>
+                            <span class="info-value" id="acceptanceDay">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">موعد الساعة</span>
+                            <span class="info-value" id="acceptanceTime">-</span>
+                        </div>
+                    </div>
+                    <div class="qr-side">
+                        <div id="acceptance-qrcode-container"></div>
+                        <div class="student-code-label">كود الطالب</div>
+                        <div class="student-code-value" id="acceptanceStudentCode">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+    </section>
+
+</div>
+
+<div id="toast-container"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p id="loadingText">جاري معالجة الحجز...</p>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js">
+</script>
+
+<script>
+    // ==========================================
+    // 1. FIREBASE CONFIGURATION
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBWwxFskPc89st610-_rKGbVwAQ3ynDB3o",
+        authDomain: "teacher-booking-61fb1.firebaseapp.com",
+        projectId: "teacher-booking-61fb1",
+        storageBucket: "teacher-booking-61fb1.firebasestorage.app",
+        messagingSenderId: "415249797568",
+        appId: "1:415249797568:web:d976c959f12eaa1ec47825",
+        measurementId: "G-YXLB56LLKB"
+    };
+
+    let db = null;
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.firestore();
+    } catch (e) {
+        console.error("Firebase Initialization Error:", e);
+    }
+
+    // ==========================================
+    // 2. APP STATE MANAGEMENT
+    // ==========================================
+    const state = {
+        currentPage: 'welcome',
+        theme: localStorage.getItem('theme') || 'light',
+        bookingData: {
+            name: '',
+            phone: '',
+            parentPhone: '',
+            gender: '',
+            grade: '',
+            day: '',
+            time: '',
+            price: ''
+        },
+        bookingId: ''
+    };
+
+    // Page order for navigation
+    const pageOrder = ['welcome', 'rules', 'form', 'appointments', 'confirmation', 'status'];
+    const pageMap = {
+        'welcome': 0,
+        'rules': 1,
+        'form': 2,
+        'appointments': 3,
+        'confirmation': 4,
+        'status': 5
+    };
+
+    // ==========================================
+    // 3. ROUTING SYSTEM (Hash-based)
+    // ==========================================
+    const Router = {
+        init() {
+            window.addEventListener('hashchange', () => this.handleRoute());
+            window.addEventListener('popstate', () => this.handleRoute());
+            if (!window.location.hash) {
+                window.location.hash = 'welcome';
+            } else {
+                this.handleRoute();
+            }
+        },
+
+        handleRoute() {
+            let hash = window.location.hash.substring(1);
+            if (!hash) {
+                hash = "welcome";
+            }
+            const parts = hash.split("/");
+            let page = parts[parts.length - 1];
+            const validPages = [
+                'welcome', 'rules', 'form', 'appointments',
+                'confirmation', 'status', 'success'
+            ];
+            if (validPages.includes(page)) {
+                state.currentPage = page;
+                this.renderPage(page);
+                App.updateNavigationUI();
+            } else {
+                window.location.hash = "welcome";
+            }
+        },
+
+        renderPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+            if (pageName === 'success') {
+                const targetPage = document.getElementById('page-confirmation');
+                if (targetPage) targetPage.classList.add('active');
+                const successView = document.getElementById('successView');
+                const confContent = document.getElementById('confirmationContent');
+                if (successView) successView.classList.add('active');
+                if (confContent) confContent.style.display = 'none';
+            } else {
+                const targetPage = document.getElementById(`page-${pageName}`);
+                if (targetPage) targetPage.classList.add('active');
+
+                if (pageName === 'confirmation') {
+                    const successView = document.getElementById('successView');
+                    const confContent = document.getElementById('confirmationContent');
+                    if (successView) successView.classList.remove('active');
+                    if (confContent) confContent.style.display = 'block';
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        navigateTo(pageName) {
+            if (pageName === 'success') {
+                const successView = document.getElementById('successView');
+                const confContent = document.getElementById('confirmationContent');
+                if (successView) successView.classList.add('active');
+                if (confContent) confContent.style.display = 'none';
+                window.location.hash = 'success';
+                return;
+            }
+            window.location.hash = pageName;
+        },
+
+        getCurrentIndex() {
+            return pageMap[state.currentPage] !== undefined ? pageMap[state.currentPage] : 0;
+        },
+
+        goToNext() {
+            const currentIdx = this.getCurrentIndex();
+            if (currentIdx < pageOrder.length - 1) {
+                this.navigateTo(pageOrder[currentIdx + 1]);
+            }
+        },
+
+        goToPrev() {
+            const currentIdx = this.getCurrentIndex();
+            if (currentIdx > 0 && state.currentPage !== 'success') {
+                this.navigateTo(pageOrder[currentIdx - 1]);
+            } else if (state.currentPage === 'success') {
+                this.navigateTo('confirmation');
+            }
+        }
+    };
+
+    // ==========================================
+    // 4. MAIN APP CONTROLLER
+    // ==========================================
+    const App = {
+        init() {
+            document.documentElement.setAttribute('data-theme', state.theme);
+            this.updateThemeIcon();
+            Router.init();
+            this.updateNavigationUI();
+        },
+
+        toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', state.theme);
+            document.documentElement.setAttribute('data-theme', state.theme);
+            this.updateThemeIcon();
+        },
+
+        updateThemeIcon() {
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = state.theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        },
+
+        navigateTo(page) {
+            Router.navigateTo(page);
+        },
+
+        navigateBack() {
+            Router.goToPrev();
+        },
+
+        updateNavigationUI() {
+            // Back button functionality removed as it's not used in the UI
+            // This function is kept for compatibility
+        },
+
+        showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconClass = type === 'error' ? 'fa-solid fa-circle-exclamation' : 'fa-solid fa-circle-check';
+            toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        },
+
+        showLoading(text = 'جاري التحميل...') {
+            const loadingText = document.getElementById('loadingText');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingText) loadingText.innerText = text;
+            if (loadingOverlay) loadingOverlay.classList.add('active');
+        },
+
+        hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) loadingOverlay.classList.remove('active');
+        },
+
+        // --- PAGE 2: Rules ---
+        toggleAgreement() {
+            const checkbox = document.getElementById('agreeCheck');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                this.handleAgreementChange();
+            }
+        },
+
+        handleAgreementChange() {
+            const checkbox = document.getElementById('agreeCheck');
+            const btn = document.getElementById('rulesNextBtn');
+            if (checkbox && btn) {
+                btn.disabled = !checkbox.checked;
+            }
+        },
+
+        // --- PAGE 3: Student Data ---
+        validateStep(stepNumber) {
+            if (stepNumber === 1) {
+                const val = document.getElementById('inputName').value.trim();
+                state.bookingData.name = val;
+                const nextStep = document.getElementById('stepPhone');
+                if (val.length >= 3 && nextStep) {
+                    nextStep.classList.add('active-step');
+                }
+            } else if (stepNumber === 2) {
+                const val = document.getElementById('inputPhone').value.trim();
+                state.bookingData.phone = val;
+                const nextStep = document.getElementById('stepParentPhone');
+                if (this.isValidPhone(val) && nextStep) {
+                    nextStep.classList.add('active-step');
+                }
+            } else if (stepNumber === 3) {
+                const val = document.getElementById('inputParentPhone').value.trim();
+                state.bookingData.parentPhone = val;
+                const nextStep = document.getElementById('stepGender');
+                if (this.isValidPhone(val) && nextStep) {
+                    nextStep.classList.add('active-step');
+                }
+            }
+        },
+
+        isValidPhone(phone) {
+            return /^01[0125][0-9]{8}$/.test(phone);
+        },
+
+        selectGender(gender, element) {
+            state.bookingData.gender = gender;
+            const parent = element.closest('.input-group');
+            if (parent) {
+                parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            }
+            element.classList.add('selected');
+            const gradeStep = document.getElementById('stepGrade');
+            if (gradeStep) gradeStep.classList.add('active-step');
+            this.checkFormCompletion();
+        },
+
+        selectGrade(grade, element) {
+            state.bookingData.grade = grade;
+            const parent = element.closest('.input-group');
+            if (parent) {
+                parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            }
+            element.classList.add('selected');
+            this.checkFormCompletion();
+        },
+
+        checkFormCompletion() {
+            const { name, phone, parentPhone, gender, grade } = state.bookingData;
+            const btn = document.getElementById('formNextBtn');
+            if (btn) {
+                btn.disabled = !(name && this.isValidPhone(phone) && this.isValidPhone(parentPhone) && gender && grade);
+            }
+        },
+
+        proceedToAppointments() {
+            const { name, phone, parentPhone, gender, grade } = state.bookingData;
+            if (!name || !this.isValidPhone(phone) || !this.isValidPhone(parentPhone) || !gender || !grade) {
+                this.showToast('يرجى إكمال جميع البيانات المطلوبة بشكل صحيح', 'error');
+                return;
+            }
+            Router.navigateTo('appointments');
+            this.loadAppointmentsForStudent();
+        },
+
+        // --- PAGE 4: Appointments ---
+        async loadAppointmentsForStudent() {
+            const grade = state.bookingData.grade;
+            const container = document.getElementById('slotsContainer');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            try {
+                if (!db) {
+                    container.innerHTML =
+                        `<p style="text-align:center;padding:20px;color:var(--text-muted);">خطأ في الاتصال بقاعدة البيانات</p>`;
+                    return;
+                }
+
+                const classesSnapshot = await db.collection('classes')
+                    .where('grade', '==', grade)
+                    .get();
+
+                if (classesSnapshot.empty) {
+                    container.innerHTML =
+                        `<p style="text-align:center;padding:20px;color:var(--text-muted);">لا توجد مواعيد متاحة لهذا الصف حالياً</p>`;
+                    return;
+                }
+
+                for (const doc of classesSnapshot.docs) {
+                    const classData = doc.data();
+                    if (classData.price) {
+                        state.bookingData.price = classData.price + " جنيه";
+                    }
+
+                    const bookingsSnapshot = await db.collection('bookings')
+                        .where('grade', '==', grade)
+                        .where('day', '==', classData.day)
+                        .where('time', '==', classData.time)
+                        .get();
+
+                    const currentCount = bookingsSnapshot.size;
+                    const maxCapacity = classData.maxStudents || 20;
+                    const remaining = maxCapacity - currentCount;
+                    const isFull = currentCount >= maxCapacity;
+
+                    const card = document.createElement('div');
+                    card.className = `slot-card ${isFull ? 'disabled' : ''}`;
+                    card.dataset.day = classData.day;
+                    card.dataset.time = classData.time;
+
+                    card.innerHTML = `
+                            <div class="slot-info">
+                                <h3><i class="fa-regular fa-calendar"></i> ${classData.day}</h3>
+                                <p><i class="fa-regular fa-clock"></i> ${classData.time}</p>
+                            </div>
+                            <div class="slot-status">
+                                <div class="count">${isFull ? 'الحصة مكتملة' : `${currentCount} / ${maxCapacity} طالب`}</div>
+                                <div class="remaining">${isFull ? 'لا توجد أماكن' : `الأماكن المتبقية: ${remaining}`}</div>
+                            </div>
+                        `;
+
+                    if (!isFull) {
+                        card.onclick = () => {
+                            document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('selected'));
+                            card.classList.add('selected');
+                            state.bookingData.day = classData.day;
+                            state.bookingData.time = classData.time;
+                            document.getElementById('selectedTime').innerText = classData.time;
+                            document.getElementById('slotNextBtn').disabled = false;
+                        };
+                    }
+
+                    container.appendChild(card);
+                }
+            } catch (error) {
+                console.error("Error loading appointments:", error);
+                container.innerHTML =
+                    `<p style="text-align:center;padding:20px;color:var(--text-muted);">حدث خطأ أثناء تحميل المواعيد</p>`;
+                this.showToast('حدث خطأ أثناء تحميل المواعيد', 'error');
+            }
+        },
+
+        proceedToConfirmation() {
+            if (!state.bookingData.day || !state.bookingData.time) {
+                this.showToast('يرجى اختيار موعد الحصة أولاً', 'error');
+                return;
+            }
+
+            document.getElementById('sumName').innerText = state.bookingData.name;
+            document.getElementById('sumPhone').innerText = state.bookingData.phone;
+            document.getElementById('sumParentPhone').innerText = state.bookingData.parentPhone;
+            document.getElementById('sumGradeGender').innerText = `${state.bookingData.grade} (${state.bookingData.gender})`;
+            document.getElementById('sumPrice').innerText = state.bookingData.price || 'غير محدد';
+            document.getElementById('sumDay').innerText = state.bookingData.day;
+            document.getElementById('sumTime').innerText = state.bookingData.time;
+
+            Router.navigateTo('confirmation');
+        },
+
+        // --- Generate QR Code ---
+        generateQRCode(containerId, text) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+
+            try {
+                new QRCode(container, {
+                    text: text,
+                    width: 110,
+                    height: 110,
+                    colorDark: "#1e293b",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                console.error("QR Code generation error:", e);
+                container.innerHTML = `<span style="font-size:0.7rem;color:var(--text-muted);">خطأ في إنشاء QR</span>`;
+            }
+        },
+
+        // --- Fill Success Card ---
+        fillSuccessCard() {
+            const { name, grade, day, time } = state.bookingData;
+            const bookingId = state.bookingId;
+
+            document.getElementById('successStudentName').textContent = name || 'اسم الطالب';
+            document.getElementById('successGrade').textContent = grade || '-';
+            document.getElementById('successDay').textContent = day || '-';
+            document.getElementById('successTime').textContent = time || '-';
+            document.getElementById('successBookingId').textContent = bookingId || 'BK----';
+
+            if (bookingId) {
+                this.generateQRCode('qrcode-container', bookingId);
+            }
+        },
+
+        // --- Fill Acceptance Card ---
+        fillAcceptanceCard(data) {
+            const wrapper = document.getElementById('acceptanceCardWrapper');
+            if (!wrapper) return;
+
+            wrapper.classList.add('visible');
+
+            document.getElementById('acceptanceName').textContent = data.name || '-';
+            document.getElementById('acceptanceGrade').textContent = data.grade || '-';
+            document.getElementById('acceptanceDay').textContent = data.day || '-';
+            document.getElementById('acceptanceTime').textContent = data.time || '-';
+            document.getElementById('acceptanceStudentCode').textContent = data.bookingId || '-';
+
+            if (data.bookingId) {
+                this.generateQRCode('acceptance-qrcode-container', data.bookingId);
+            }
+        },
+
+        hideAcceptanceCard() {
+            const wrapper = document.getElementById('acceptanceCardWrapper');
+            if (wrapper) {
+                wrapper.classList.remove('visible');
+            }
+        },
+
+        // --- PAGE 5: Booking Submission ---
+        async submitBooking() {
+            if (!db) {
+                this.showToast('إعدادات Firebase غير متوفرة. يرجى ضبط الكود.', 'error');
+                return;
+            }
+
+            this.showLoading('جاري تأكيد الحجز ومنع التكرار...');
+
+            try {
+                const existingBooking = await db.collection('bookings')
+                    .where('phone', '==', state.bookingData.phone)
+                    .get();
+
+                if (!existingBooking.empty) {
+                    this.hideLoading();
+                    this.showToast('هذا الرقم لديه حجز مسجل بالفعل', 'error');
+                    return;
+                }
+
+                const bookingId = "BK" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100);
+                state.bookingId = bookingId;
+
+                await db.runTransaction(async (transaction) => {
+                    const currentBookings = await db.collection('bookings')
+                        .where('grade', '==', state.bookingData.grade)
+                        .where('day', '==', state.bookingData.day)
+                        .where('time', '==', state.bookingData.time)
+                        .get();
+
+                    if (currentBookings.size >= 20) {
+                        throw new Error('FULL_CAPACITY');
+                    }
+
+                    await db.collection('bookings').add({
+                        bookingId: bookingId,
+                        name: state.bookingData.name,
+                        phone: state.bookingData.phone,
+                        parentPhone: state.bookingData.parentPhone,
+                        gender: state.bookingData.gender,
+                        grade: state.bookingData.grade,
+                        day: state.bookingData.day,
+                        time: state.bookingData.time,
+                        price: state.bookingData.price,
+                        status: "pending",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                this.hideLoading();
+                this.fillSuccessCard();
+                Router.navigateTo('success');
+                this.showToast('تم الحجز بنجاح!', 'success');
+
+            } catch (error) {
+                this.hideLoading();
+                console.error("Booking transaction failed:", error);
+                if (error.message === 'FULL_CAPACITY') {
+                    this.showToast('عذراً، اكتمل العدد في هذا الموعد للتو. يرجى اختيار موعد آخر.', 'error');
+                    Router.navigateTo('appointments');
+                    this.loadAppointmentsForStudent();
+                } else {
+                    this.showToast('حدث خطأ أثناء إتمام الحجز. يرجى المحاولة مرة أخرى.', 'error');
+                }
+            }
+        }
+    };
+
+    // ==========================================
+    // 5. STATUS APP (Integrated Query Page)
+    // ==========================================
+    const StatusApp = {
+        handleInputChange() {
+            const input = document.getElementById('statusSearchInput');
+            const btn = document.getElementById('statusSearchBtn');
+            if (input && btn) {
+                btn.disabled = input.value.trim().length < 3;
+            }
+        },
+
+        async searchBooking() {
+            const input = document.getElementById('statusSearchInput');
+            if (!input) return;
+            
+            const query = input.value.trim();
+            if (query.length < 3) return;
+
+            const resultCard = document.getElementById('statusResultCard');
+            const noResult = document.getElementById('statusNoResult');
+            const loading = document.getElementById('statusLoading');
+
+            if (resultCard) resultCard.classList.remove('visible');
+            if (noResult) noResult.classList.remove('visible');
+            if (loading) loading.classList.add('active');
+
+            App.hideAcceptanceCard();
+
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized');
+                }
+
+                let snapshot;
+                if (query.toUpperCase().startsWith('BK')) {
+                    snapshot = await db.collection('bookings')
+                        .where('bookingId', '==', query.toUpperCase())
+                        .get();
+                } else {
+                    snapshot = await db.collection('bookings')
+                        .where('phone', '==', query)
+                        .get();
+                }
+
+                if (loading) loading.classList.remove('active');
+
+                if (snapshot.empty) {
+                    if (noResult) noResult.classList.add('visible');
+                    App.hideAcceptanceCard();
+                    return;
+                }
+
+                const data = snapshot.docs[0].data();
+
+                const setElementText = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value || '-';
+                };
+
+                setElementText('srBookingId', data.bookingId);
+                setElementText('srName', data.name);
+                setElementText('srPhone', data.phone);
+                setElementText('srGrade', data.grade);
+                setElementText('srDay', data.day);
+                setElementText('srTime', data.time);
+                setElementText('srPrice', data.price);
+
+                const status = data.status || 'pending';
+                const statusMap = {
+                    'pending': { text: '⏳ قيد المراجعة', class: 'pending' },
+                    'approved': { text: '✅ مقبول', class: 'approved' },
+                    'accepted': { text: '✅ مقبول', class: 'approved' },
+                    'rejected': { text: '❌ مرفوض', class: 'rejected' }
+                };
+                const statusInfo = statusMap[status] || statusMap['pending'];
+                const statusEl = document.getElementById('srStatus');
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+                }
+
+                if (resultCard) resultCard.classList.add('visible');
+
+                if (status === 'approved' || status === 'accepted') {
+                    App.fillAcceptanceCard(data);
+                } else {
+                    App.hideAcceptanceCard();
+                }
+
+            } catch (error) {
+                console.error("Search error:", error);
+                if (loading) loading.classList.remove('active');
+                if (noResult) {
+                    noResult.classList.add('visible');
+                    const p = noResult.querySelector('p');
+                    if (p) p.textContent = 'حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.';
+                }
+                App.hideAcceptanceCard();
+            }
+        }
+    };
+
+    // Enter key support for status search
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('statusSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const btn = document.getElementById('statusSearchBtn');
+                    if (btn && !btn.disabled) {
+                        StatusApp.searchBooking();
+                    }
+                }
+            });
+        }
+        App.init();
+    });
+</script>
+</body>
+</html>
