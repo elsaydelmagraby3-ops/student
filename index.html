@@ -913,17 +913,17 @@
             border-radius: 50%;
             object-fit: cover;
         }
-        .app-footer {
-            text-align: left;
-            padding: 10px 0 10px 10px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-color);
-            margin-top: auto;
-            direction: ltr;
-            width: 100%;
-        }
+      .footer-link {
+    text-align: left;
+    padding: 10px 0 10px 10px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-color);
+    margin-top: auto;
+    direction: ltr;
+    width: 100%;
+}
         .contact-links {
             display: flex;
             justify-content: center;
@@ -1207,8 +1207,14 @@
                     استعلام عن حالة الحجز
                 </button>
             </div>
-
-            <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+<footer>
+    <a href="https://www.facebook.com/profile.php?id=61575958225637"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="footer-link">
+        Powered by Elsayd Elmaghraby
+    </a>
+</footer>
         </section>
 
         <!-- PAGE 2: Rules & Regulations -->
@@ -1251,7 +1257,14 @@
             <button class="btn" id="rulesNextBtn" onclick="App.navigateTo('form')" disabled>
                 متابعة الحجز <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+          <footer>
+    <a href="https://www.facebook.com/profile.php?id=61575958225637"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="footer-link">
+        Powered by Elsayd Elmaghraby
+    </a>
+</footer>
         </section>
 
         <!-- PAGE 3: Student Data Input Form -->
@@ -1262,7 +1275,7 @@
             <div class="step-group">
                 <div class="input-group active-step" id="stepName">
                     <label>اسم الطالب ثلاثي</label>
-                    <input type="text" id="inputName" class="input-field" placeholder="مثال: أحمد محمد علي" oninput="App.validateStep(1)">
+                    <input type="text" id="inputName" class="input-field" placeholder="مثال: السيد أيمن المغربي" oninput="App.validateStep(1)">
                 </div>
 
                 <div class="input-group" id="stepPhone">
@@ -1300,7 +1313,14 @@
             <button class="btn" id="formNextBtn" onclick="App.proceedToAppointments()" disabled style="margin-top: 10px;">
                 عرض المواعيد المتاحة <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+            <footer>
+    <a href="https://www.facebook.com/profile.php?id=61575958225637"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="footer-link">
+        Powered by Elsayd Elmaghraby
+    </a>
+</footer>
         </section>
 
         <!-- PAGE 4: Appointments Selection -->
@@ -1544,7 +1564,14 @@
             </div>
         </div>
 
-        <footer class="app-footer">Powered by Elsayd Elmaghraby</footer>
+      <footer>
+    <a href="https://www.facebook.com/profile.php?id=61575958225637"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="footer-link">
+        Powered by Elsayd Elmaghraby
+    </a>
+</footer>
     </section>
 
 </div>
